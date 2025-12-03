@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra Cứu Vi Phạm Giao Thông</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="text"]::placeholder {
+            color: #999;
+        }
+
+        .btn-search {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-search:active {
+            transform: translateY(0);
+        }
+
+        .btn-search:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .results-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .results-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .results-count {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .violation-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .violation-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .violation-row {
+            display: flex;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .violation-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .violation-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 120px;
+        }
+
+        .violation-value {
+            color: #333;
+            flex: 1;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-processed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-results-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚦 Tra Cứu Vi Phạm Giao Thông</h1>
+        <p class="subtitle">Tra cứu phương tiện vi phạm giao thông qua hình ảnh</p>
+
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="plate">Biển kiểm soát</label>
+                <input 
+                type="text"
+                id="plate"
+                name="plate"
+                placeholder="VD: 29A12345 hoặc 84K123456"
+                required
+                pattern="^[0-9]{2}[A-Za-z]{1,2}[0-9]{4,6}$"
+                title="Nhập biển số hợp lệ (VD: 29A12345 hoặc 84K123456)"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="vehicleType">Loại phương tiện</label>
+                <select id="vehicleType" name="vehicleType" required>
+                    <option value="">-- Chọn loại phương tiện --</option>
+                    <option value="1">Xe ô tô</option>
+                    <option value="2">Xe mô tô</option>
+                    <option value="3">Xe đạp điện</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-search" id="searchBtn">
+                Tra cứu
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Đang tra cứu thông tin...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="results" id="results">
+            <div class="results-header">
+                <div class="results-title">Kết quả tra cứu</div>
+                <div class="results-count" id="resultsCount"></div>
+            </div>
+            <div id="violationsList"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api/traffic-violations';
+
+        const searchForm = document.getElementById('searchForm');
+        const plateInput = document.getElementById('plate');
+        const vehicleTypeSelect = document.getElementById('vehicleType');
+        const searchBtn = document.getElementById('searchBtn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const results = document.getElementById('results');
+        const resultsCount = document.getElementById('resultsCount');
+        const violationsList = document.getElementById('violationsList');
+
+        // Convert plate to uppercase automatically
+        plateInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+
+        searchForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const plate = plateInput.value.trim();
+            const vehicleType = vehicleTypeSelect.value;
+
+            if (!plate || !vehicleType) {
+                showError('Vui lòng điền đầy đủ thông tin!');
+                return;
+            }
+
+            // Reset UI
+            error.classList.remove('show');
+            results.classList.remove('show');
+            loading.classList.add('show');
+            searchBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/${plate}?vehicleType=${vehicleType}`);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Có lỗi xảy ra khi tra cứu');
+                }
+
+                const violations = await response.json();
+                displayResults(plate, vehicleType, violations);
+
+            } catch (err) {
+                showError(err.message);
+            } finally {
+                loading.classList.remove('show');
+                searchBtn.disabled = false;
+            }
+        });
+
+        function displayResults(plate, vehicleType, violations) {
+            const vehicleTypeNames = {
+                '1': 'Xe ô tô',
+                '2': 'Xe mô tô',
+                '3': 'Xe đạp điện'
+            };
+
+            resultsCount.textContent = `Biển số: ${plate} (${vehicleTypeNames[vehicleType]}) - Tìm thấy ${violations.length} vi phạm`;
+
+            if (violations.length === 0) {
+                violationsList.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">✅</div>
+                        <h3>Không tìm thấy vi phạm</h3>
+                        <p>Phương tiện này không có vi phạm giao thông.</p>
+                    </div>
+                `;
+            } else {
+                violationsList.innerHTML = violations.map((violation, index) => `
+                    <div class="violation-card">
+                        <div class="violation-row">
+                            <span class="violation-label">Vi phạm #${index + 1}</span>
+                        </div>
+                        <div class="violation-row">
+                            <span class="violation-label">Thời gian:</span>
+                            <span class="violation-value">${violation.dateTime}</span>
+                        </div>
+                        <div class="violation-row">
+                            <span class="violation-label">Địa điểm:</span>
+                            <span class="violation-value">${violation.location}</span>
+                        </div>
+                        <div class="violation-row">
+                            <span class="violation-label">Loại vi phạm:</span>
+                            <span class="violation-value">${violation.violationType}</span>
+                        </div>
+                        <div class="violation-row">
+                            <span class="violation-label">Trạng thái:</span>
+                            <span class="violation-value">
+                                <span class="status-badge ${violation.status.includes('Đã xử phạt') ? 'status-processed' : 'status-pending'}">
+                                    ${violation.status}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            results.classList.add('show');
+        }
+
+        function showError(message) {
+            error.textContent = `❌ ${message}`;
+            error.classList.add('show');
+        }
+    </script>
+</body>
+</html>
