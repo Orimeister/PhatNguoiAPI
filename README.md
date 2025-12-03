@@ -118,7 +118,7 @@ Before running this application, ensure you have:
 
 5. **Access the application**
    - API: `http://localhost:8080/api/traffic-violations`
-   - UI: Open `index.html` in a web browser
+   - UI: Open `traffic_violations_ui.html` in a web browser
 
 ## ⚙️ Configuration
 
@@ -269,7 +269,7 @@ src/
 │   └── resources/
 │       ├── application.properties                      # App configuration
 │       └── static/
-│           └── index.html                              # Frontend UI
+│           └── traffic_violations_ui.html                              # Frontend UI
 └── test/
     └── java/
         └── orimeister/
