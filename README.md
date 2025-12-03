@@ -75,12 +75,6 @@ Before running this application, ensure you have:
    sudo apt-get install tesseract-ocr
    ```
 
-4. **Vietnamese language data for Tesseract** (optional but recommended)
-   ```bash
-   # Download vie.traineddata from: https://github.com/tesseract-ocr/tessdata
-   # Place in: /usr/share/tesseract-ocr/4.00/tessdata/ (Linux)
-   # Or: C:\Program Files\Tesseract-OCR\tessdata\ (Windows)
-   ```
 
 ## 🚀 Installation
 
