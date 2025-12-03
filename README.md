@@ -400,10 +400,6 @@ This application is for educational purposes only. It retrieves publicly availab
 - Respect the CSGT website's terms of service
 - This tool does not modify or falsify any official records
 
-## 📧 Contact
-
-Project Link: [https://github.com/yourusername/traffic-violations-lookup](https://github.com/yourusername/traffic-violations-lookup)
-
 ---
 
 Made with ❤️ for safer roads in Vietnam 🇻🇳
